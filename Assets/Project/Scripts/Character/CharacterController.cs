@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using MessagePipe;
+﻿using MessagePipe;
 using R3;
 using Reflex.Attributes;
 using UnityEngine;
@@ -64,6 +62,9 @@ public class CharacterController : MonoBehaviour {
   private ObjectThrowService throwService;
 
   [Inject]
+  private WeaponActiveService weaponActiveService;
+
+  [Inject]
   private ISubscriber<ActiveItemSelectedEvent, ActiveItemSelectedMessage> activeItemSelectedSubscriber;
 
   private Rigidbody mainRigidbody;
@@ -71,30 +72,26 @@ public class CharacterController : MonoBehaviour {
   private bool onSlope;
   private Vector3 slopeNormal;
   private bool jumping;
-  private GameObject activeItem;
 
-  private void Awake() {
+  private void Start() {
     SetupRigidbody();
+    RegisterMessageHandlers();
+    RegisterUserInputHandlers();
+  }
 
-    activeItemSelectedSubscriber.Subscribe(
-      new ActiveItemSelectedEvent(),
-      message => {
-        if (message.item == null) return;
+  private void Update() {
+    if (userInput.Jump.Value && grounded) Jump();
+    ApplySpeedControl(grounded ? moveSpeed : airMoveSpeed);
+    ApplyDamping();
+  }
 
-        var itemGameObject = ((CollectableItem)message.item).gameObject;
+  private void FixedUpdate() {
+    CheckGround();
+    MovePlayer(userInput.Move.Value, grounded ? moveSpeed : airMoveSpeed);
+    if (jumping) jumping = false;
+  }
 
-        if (itemGameObject.OrNull() != null && itemGameObject != activeItem) {
-          if (activeItem) activeItem.SetActive(false);
-          activeItem = itemGameObject;
-          activeItem.transform.SetParent(itemHolder.transform);
-          activeItem.transform.localPosition = Vector3.zero;
-          activeItem.transform.localRotation = Quaternion.identity;
-          activeItem.SetActive(true);
-          activeItem.GetComponent<WeaponShoot>().enabled = true;
-        }
-      }
-    );
-
+  private void RegisterUserInputHandlers() {
     userInput.Throw
              .Where(value => value)
              .Subscribe(_ => throwService.ThrowObject(
@@ -113,19 +110,18 @@ public class CharacterController : MonoBehaviour {
     mainRigidbody.freezeRotation = true;
   }
 
-  private void Update() {
-    if (userInput.Jump.Value && grounded) Jump();
-    ApplySpeedControl(grounded ? moveSpeed : airMoveSpeed);
-    ApplyDamping();
+  private void RegisterMessageHandlers() => activeItemSelectedSubscriber.Subscribe(new ActiveItemSelectedEvent(), OnActiveItemSelected);
+
+  private void OnActiveItemSelected(ActiveItemSelectedMessage message) {
+    if (message.item is CollectableItem item) weaponActiveService.SetActiveItem(item.GetComponent<WeaponShoot>(), itemHolder.transform);
   }
 
-  private void FixedUpdate() {
-    CheckGround();
-    MovePlayer(userInput.Move.Value, grounded ? moveSpeed : airMoveSpeed);
-    if (jumping) jumping = false;
+  private void Jump() {
+    mainRigidbody.linearVelocity = mainRigidbody.linearVelocity.With(y: 0);
+    mainRigidbody.AddForce(transform.up * Mathf.Sqrt(2 * jumpHeight + mainRigidbody.linearDamping * Physics.gravity.magnitude), ForceMode.Impulse);
+    grounded = false;
+    jumping = true;
   }
-
-  private void ApplyDamping() => mainRigidbody.linearDamping = grounded ? groundDamping : airDamping;
 
   private void ApplySpeedControl(float speed) {
     var currentVelocity = mainRigidbody.linearVelocity;
@@ -138,6 +134,18 @@ public class CharacterController : MonoBehaviour {
     }
   }
 
+  private void ApplyDamping() => mainRigidbody.linearDamping = grounded ? groundDamping : airDamping;
+
+  private void CheckGround() {
+    var position = transform.position;
+    grounded = Physics.Raycast(position, Vector3.down, out var _, raycastDistance, groundMask);
+    Physics.Raycast(position, Vector3.down, out var result, raycastDistance * 1.5f, groundMask);
+    var angle = Vector3.Angle(result.normal, Vector3.up);
+    onSlope = angle != 0 && angle <= slopeMaxAngle;
+    slopeNormal = result.normal;
+    mainRigidbody.useGravity = !onSlope;
+  }
+
   private void MovePlayer(Vector2 direction, float speed) {
     var movement = orientation.transform.right * direction.x + orientation.transform.forward * direction.y;
 
@@ -147,37 +155,5 @@ public class CharacterController : MonoBehaviour {
     }
 
     mainRigidbody.AddForce(movement.normalized * (speed * SPEED_MULTIPLIER), ForceMode.Force);
-  }
-
-  private void Jump() {
-    mainRigidbody.linearVelocity = mainRigidbody.linearVelocity.With(y: 0);
-    mainRigidbody.AddForce(transform.up * Mathf.Sqrt(2 * jumpHeight + mainRigidbody.linearDamping * Physics.gravity.magnitude), ForceMode.Impulse);
-    grounded = false;
-    jumping = true;
-  }
-
-  private void CheckGround() {
-    var position = transform.position;
-
-    grounded = Physics.Raycast(
-      position,
-      Vector3.down,
-      out var _,
-      raycastDistance,
-      groundMask
-    );
-
-    Physics.Raycast(
-      position,
-      Vector3.down,
-      out var result,
-      raycastDistance * 1.5f,
-      groundMask
-    );
-
-    var angle = Vector3.Angle(result.normal, Vector3.up);
-    onSlope = angle != 0 && angle <= slopeMaxAngle;
-    slopeNormal = result.normal;
-    mainRigidbody.useGravity = !onSlope;
   }
 }
