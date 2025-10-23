@@ -1,0 +1,29 @@
+:root {
+}
+
+.item {
+    flex-grow: 1;
+    width: 180px;
+    height: 180px;
+    max-width: 160px;
+    max-height: 160px;
+}
+
+.item-container {
+    flex-grow: 1;
+    align-self: flex-end;
+    max-width: 200px;
+    max-height: 200px;
+    width: 200px;
+    height: 200px;
+    background-image: url("project://database/Assets/Project/Materials/KenneyPrototype/PNG/Dark/texture_07.png?fileID=2800000&guid=e110917ea5c7af64181d713443f63b81&type=3#texture_07");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.65);
+    justify-content: space-around;
+    align-items: center;
+    display: none;
+}
+
+.item-name {
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+}
