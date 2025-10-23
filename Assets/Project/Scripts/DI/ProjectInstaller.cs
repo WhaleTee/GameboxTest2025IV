@@ -29,6 +29,7 @@ namespace WhaleTee.GameboxTest2025IV.DI {
       containerBuilder.AddSingleton(typeof(UserInput));
       containerBuilder.AddSingleton(typeof(GameObjectFactory), typeof(DeactivatedGameObjectFactory));
       containerBuilder.AddSingleton(typeof(ObjectPoolManager));
+      containerBuilder.AddSingleton(typeof(ObjectThrowService));
     }
 
     public void InstallBindings(ContainerBuilder containerBuilder) {

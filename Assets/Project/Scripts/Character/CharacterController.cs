@@ -10,16 +10,6 @@ using WhaleTee.Reactive.Input;
 
 [RequireComponent(typeof(Rigidbody))]
 public class CharacterController : MonoBehaviour {
-  [Header("Camera")]
-  [SerializeField]
-  private CameraFollowSettings cameraFollowSettings;
-
-  [SerializeField]
-  private CameraRotationSettings cameraRotationSettings;
-
-  private CameraFollow cameraFollow;
-  private CameraRotation cameraRotation;
-
   [Header("Movement")]
   [SerializeField]
   private GameObject orientation;
@@ -57,18 +47,21 @@ public class CharacterController : MonoBehaviour {
   [Header("Items")]
   [SerializeField]
   private GameObject itemHolder;
-  
+
   [SerializeField]
   private float throwAngle;
-  
+
   [SerializeField]
   private float throwForce;
-  
+
   [SerializeField]
   private GameObject grenadePrefab;
-  
+
   [Inject]
   private UserInput userInput;
+
+  [Inject]
+  private ObjectThrowService throwService;
 
   [Inject]
   private ISubscriber<ActiveItemSelectedEvent, ActiveItemSelectedMessage> activeItemSelectedSubscriber;
@@ -79,32 +72,40 @@ public class CharacterController : MonoBehaviour {
   private Vector3 slopeNormal;
   private bool jumping;
   private GameObject activeItem;
-  private ObjectThrow thrower;
 
   private void Awake() {
     SetupRigidbody();
 
-    cameraFollow = new CameraFollow(cameraFollowSettings);
-    cameraRotation = new CameraRotation(cameraRotationSettings, userInput);
-    thrower = new ObjectThrow();
+    activeItemSelectedSubscriber.Subscribe(
+      new ActiveItemSelectedEvent(),
+      message => {
+        if (message.item == null) return;
 
-    activeItemSelectedSubscriber.Subscribe(new ActiveItemSelectedEvent(),
-                                           message => {
-                                             if (message.item == null) return;
-                                             var itemGameObject = ((CollectableItem)message.item).gameObject;
-                                             if (itemGameObject.OrNull() != null && itemGameObject != activeItem) {
-                                               if (activeItem) activeItem.SetActive(false);
-                                               activeItem = itemGameObject;
-                                               activeItem.transform.SetParent(itemHolder.transform);
-                                               activeItem.transform.localPosition = Vector3.zero;
-                                               activeItem.transform.localRotation = Quaternion.identity;
-                                               activeItem.SetActive(true);
-                                               activeItem.GetComponent<WeaponShoot>().enabled = true;
-                                             }
-                                           });
+        var itemGameObject = ((CollectableItem)message.item).gameObject;
 
-    userInput.Throw.Where(value => value).Subscribe(_ => thrower.ThrowObject(itemHolder.transform, throwAngle, throwForce, grenadePrefab)).AddTo(this);
+        if (itemGameObject.OrNull() != null && itemGameObject != activeItem) {
+          if (activeItem) activeItem.SetActive(false);
+          activeItem = itemGameObject;
+          activeItem.transform.SetParent(itemHolder.transform);
+          activeItem.transform.localPosition = Vector3.zero;
+          activeItem.transform.localRotation = Quaternion.identity;
+          activeItem.SetActive(true);
+          activeItem.GetComponent<WeaponShoot>().enabled = true;
+        }
+      }
+    );
 
+    userInput.Throw
+             .Where(value => value)
+             .Subscribe(_ => throwService.ThrowObject(
+                          itemHolder.transform,
+                          grenadePrefab.transform.localScale,
+                          throwAngle,
+                          throwForce,
+                          grenadePrefab
+                        )
+             )
+             .AddTo(this);
   }
 
   private void SetupRigidbody() {
@@ -118,19 +119,11 @@ public class CharacterController : MonoBehaviour {
     ApplyDamping();
   }
 
-  private void LateUpdate() {
-    cameraRotation.Update();
-    cameraFollow.Update();
-    UpdateObjectHolder();
-  }
-
   private void FixedUpdate() {
     CheckGround();
     MovePlayer(userInput.Move.Value, grounded ? moveSpeed : airMoveSpeed);
     if (jumping) jumping = false;
   }
-
-  private void UpdateObjectHolder() => itemHolder.transform.rotation = cameraRotationSettings.CameraTransform.rotation;
 
   private void ApplyDamping() => mainRigidbody.linearDamping = grounded ? groundDamping : airDamping;
 
