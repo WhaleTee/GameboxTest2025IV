@@ -22,7 +22,7 @@ public class ItemSelector : MonoBehaviour {
 
       item = collectableItem;
       hud.ActivateInteract();
-      itemSelectPublisher.Publish(new SelectItemEvent(), new SelectItemMessage(collectableItem));
+      itemSelectPublisher.Publish(new SelectItemEvent(), new SelectItemMessage(collectableItem.gameObject));
     } else {
       if (item) {
         itemSelectPublisher.Publish(new SelectItemEvent(), new SelectItemMessage(null));

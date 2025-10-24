@@ -1,13 +1,8 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class CollectableItem : MonoBehaviour, Item {
-  [field: SerializeField] public Sprite Sprite { get; private set; }
-  [field: SerializeField] public string Name { get; private set; }
-  
-  public GameObject RuntimeObject { get; private set; }
+public class CollectableItem : MonoBehaviour {
+  [field: SerializeField] public Item Item { get; private set; }
 
-  private void Awake() {
-    RuntimeObject = gameObject;
-  }
+  private void OnEnable() => Item.owner = gameObject;
 }

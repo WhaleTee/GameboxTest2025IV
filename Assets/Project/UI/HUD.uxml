@@ -6,7 +6,10 @@
     <ui:VisualElement name="Inventory" style="flex-grow: 1; flex-direction: row;">
         <ui:VisualElement name="Container" class="item-container" style="display: none;">
             <ui:VisualElement name="Item" class="item" />
-            <ui:Label text="Label" name="Name" class="item-name" />
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                <ui:Label text="Label" name="Name" class="item-name" />
+                <ui:Label text="Label" name="Count" class="item-name" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

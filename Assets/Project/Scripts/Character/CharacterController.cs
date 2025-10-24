@@ -113,7 +113,9 @@ public class CharacterController : MonoBehaviour {
   private void RegisterMessageHandlers() => activeItemSelectedSubscriber.Subscribe(new ActiveItemSelectedEvent(), OnActiveItemSelected);
 
   private void OnActiveItemSelected(ActiveItemSelectedMessage message) {
-    if (message.item is CollectableItem item) weaponActiveService.SetActiveItem(item.GetComponent<WeaponShoot>(), itemHolder.transform);
+    if (message.item.OrNull() != null && message.item.TryGetComponent<CollectableItem>(out var item)) {
+      weaponActiveService.SetActiveItem(item.GetComponent<WeaponShoot>(), itemHolder.transform);
+    }
   }
 
   private void Jump() {

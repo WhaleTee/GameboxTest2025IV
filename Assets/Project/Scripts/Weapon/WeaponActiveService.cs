@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using WhaleTee.Extensions;
 
 public class WeaponActiveService {
   private GameObject activeItem;
@@ -6,6 +7,8 @@ public class WeaponActiveService {
   public GameObject GetActiveItem() => activeItem;
 
   public void SetActiveItem(WeaponShoot weapon, Transform itemHolder) {
+    if (weapon.OrNull() == null) return;
+    
     var gameObject = weapon.gameObject;
     
     if (gameObject == null || gameObject == activeItem) return;

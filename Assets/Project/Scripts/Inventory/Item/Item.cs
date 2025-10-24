@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
-public interface Item {
-  Sprite Sprite { get; }
-  string Name { get; }
-  GameObject RuntimeObject { get; }
+[CreateAssetMenu(fileName = "Item", menuName = "Item/Data")]
+public class Item : ScriptableObject {
+  [field: SerializeField] public Sprite Sprite { get; private set; }
+  [field: SerializeField] public string Name { get; private set; }
+  [HideInInspector] public GameObject owner;
 }

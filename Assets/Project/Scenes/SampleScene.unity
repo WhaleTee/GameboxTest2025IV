@@ -420,16 +420,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f8241ad01ab4728a541e851c08c2d4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  cameraFollowSettings:
-    <Transform>k__BackingField: {fileID: 956346118}
-    <FollowTransform>k__BackingField: {fileID: 775917862}
-    <SmoothTime>k__BackingField: 0.01
-    <MaxSpeed>k__BackingField: 60
-  cameraRotationSettings:
-    <CameraTransform>k__BackingField: {fileID: 330585546}
-    <TargetOrientationTransform>k__BackingField: {fileID: 1484234768}
-    <RotationSensitivity>k__BackingField: 0.075
-    <RotationXLimit>k__BackingField: 60
   orientation: {fileID: 1484234767}
   moveSpeed: 8
   groundDamping: 4
@@ -8589,7 +8579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7ccb4b5efcf406580be124195a014b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HUD
-  UIDocument: {fileID: 1814539796}
+  uiDocument: {fileID: 1814539796}
   activeItemSprite: {fileID: 21300000, guid: 9998f9e5eeb8a74459888bff1e17219d, type: 3}
   inactiveItemSprite: {fileID: 21300000, guid: da526038536fdf44b8f9fc9f652587df, type: 3}
 --- !u!1 &1866913490

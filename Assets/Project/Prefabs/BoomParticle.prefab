@@ -4849,4 +4849,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d9369a7e1a4fc58ef7f5f080eba0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LifetimeParticle
-  lifetime: 0.25
+  lifetime: 0.17

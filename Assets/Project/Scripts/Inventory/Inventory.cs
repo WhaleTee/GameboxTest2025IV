@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using ZLinq;
 
 public class Inventory {
   private readonly Item[] inventory = new Item[10];
   private readonly bool[] emptyInventoryCells = new bool[10];
   private readonly Dictionary<Item, int> items = new Dictionary<Item, int>();
-  private int lastIndex = 0;
+  private readonly Dictionary<Item, GameObject> itemOwner = new Dictionary<Item, GameObject>();
+  private int lastIndex;
 
   public Inventory() {
     for (var i = 0; i < emptyInventoryCells.Length; i++) {
@@ -56,7 +58,8 @@ public class Inventory {
   }
 
   public void AddItem(Item item, int count = 1) {
-    items.Add(item, count);
+    if (!items.TryAdd(item, count)) items[item] += count;
+    itemOwner.TryAdd(item, item.owner);
 
     if (!inventory.AsValueEnumerable().Contains(item)) {
       if (lastIndex < 10 || inventory[0] == null) {
@@ -106,6 +109,8 @@ public class Inventory {
   }
 
   public int GetCount(Item item) => items[item];
+  
+  public GameObject GetOwner(Item item) => itemOwner[item];
 
   public int IndexOf(Item item) {
     for (var i = 0; i < inventory.Length; i++) {

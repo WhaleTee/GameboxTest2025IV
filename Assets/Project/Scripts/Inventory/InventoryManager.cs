@@ -33,10 +33,10 @@ public class InventoryManager : MonoBehaviour {
              .Subscribe(value => {
                           var item = inventory.GetItem(value);
 
-                          if (item == null) activeItemIndex = -1;
+                          if (item.OrNull() == null) activeItemIndex = -1;
                           else activeItemIndex = value;
 
-                          activeItemPublisher.Publish(new ActiveItemSelectedEvent(), new ActiveItemSelectedMessage(item, activeItemIndex));
+                          activeItemPublisher.Publish(new ActiveItemSelectedEvent(), new ActiveItemSelectedMessage(inventory.GetOwner(item), activeItemIndex));
                         }
              )
              .AddTo(this);
@@ -45,7 +45,7 @@ public class InventoryManager : MonoBehaviour {
              .Subscribe(_ => {
                           var item = inventory.GetNextItem(activeItemIndex);
                           if (item != null) activeItemIndex = inventory.IndexOf(item);
-                          activeItemPublisher.Publish(new ActiveItemSelectedEvent(), new ActiveItemSelectedMessage(item, activeItemIndex));
+                          activeItemPublisher.Publish(new ActiveItemSelectedEvent(), new ActiveItemSelectedMessage(inventory.GetOwner(item), activeItemIndex));
                         }
              )
              .AddTo(this);
@@ -54,22 +54,21 @@ public class InventoryManager : MonoBehaviour {
              .Subscribe(_ => {
                           var item = inventory.GetPreviousItem(activeItemIndex);
                           if (item != null) activeItemIndex = inventory.IndexOf(item);
-                          activeItemPublisher.Publish(new ActiveItemSelectedEvent(), new ActiveItemSelectedMessage(item, activeItemIndex));
+                          activeItemPublisher.Publish(new ActiveItemSelectedEvent(), new ActiveItemSelectedMessage(inventory.GetOwner(item), activeItemIndex));
                         }
              )
              .AddTo(this);
 
     userInput.Interact.Where(value => value && selectedItemInteractable)
              .Subscribe(_ => {
-                          inventory.AddItem(selectedItem);
+                          inventory.AddItem(selectedItem.Item);
 
-                          if (inventory.GetCount(selectedItem) > 1) Destroy(selectedItem);
-                          else selectedItem.gameObject.SetActive(false);
+                          selectedItem.gameObject.SetActive(false);
 
                           selectedItem.gameObject.SetLayersRecursively((int)Mathf.Log(inventoryItemLayer, 2f));
 
-                          activeItemIndex = inventory.IndexOf(selectedItem);
-                          addItemPublisher.Publish(new AddItemEvent(), new AddItemMessage(selectedItem, activeItemIndex));
+                          activeItemIndex = inventory.IndexOf(selectedItem.Item);
+                          addItemPublisher.Publish(new AddItemEvent(), new AddItemMessage(selectedItem.Item, activeItemIndex, 1));
                           selectedItem = null;
                           selectedItemInteractable = false;
                         }
@@ -79,7 +78,7 @@ public class InventoryManager : MonoBehaviour {
     selectItemSubscriber.Subscribe(
       new SelectItemEvent(),
       message => {
-        selectedItem = (CollectableItem)message.item;
+        selectedItem = message.item.OrNull() != null ? message.item.GetComponent<CollectableItem>() : null;
         selectedItemInteractable = selectedItem != null;
       }
     );
