@@ -4448,7 +4448,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5529730729632280622, guid: ae1ce7e117746724db5ebbc4d447d74e, type: 3}
       propertyPath: m_Name
-      value: TargetWithLootWand (3)
+      value: RiffleLootTarget
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6454,7 +6454,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1698162443184771654, guid: 826686744ad46d34998c4f0463ab1d22, type: 3}
       propertyPath: m_Name
-      value: TargetWithLootShield (3)
+      value: PistolLootTarget
       objectReference: {fileID: 0}
     - target: {fileID: 2718296091096708122, guid: 826686744ad46d34998c4f0463ab1d22, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7633,7 +7633,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1698162443184771654, guid: 826686744ad46d34998c4f0463ab1d22, type: 3}
       propertyPath: m_Name
-      value: TargetWithLootShield (1)
+      value: PistolLootTarget
       objectReference: {fileID: 0}
     - target: {fileID: 2718296091096708122, guid: 826686744ad46d34998c4f0463ab1d22, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9485,7 +9485,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1698162443184771654, guid: 826686744ad46d34998c4f0463ab1d22, type: 3}
       propertyPath: m_Name
-      value: TargetWithLootShield (2)
+      value: PistolLootTarget
       objectReference: {fileID: 0}
     - target: {fileID: 2718296091096708122, guid: 826686744ad46d34998c4f0463ab1d22, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10221,7 +10221,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5529730729632280622, guid: ae1ce7e117746724db5ebbc4d447d74e, type: 3}
       propertyPath: m_Name
-      value: TargetWithLootWand
+      value: RiffleLootTarget
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

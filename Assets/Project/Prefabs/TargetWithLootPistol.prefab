@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8113686010714490750}
   - component: {fileID: 415714822876710690}
   m_Layer: 11
-  m_Name: TargetWithLootShield
+  m_Name: TargetWithLootPistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

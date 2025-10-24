@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8397373819579285564}
   - component: {fileID: 6624918925570504661}
   m_Layer: 11
-  m_Name: TargetWithLootWand
+  m_Name: TargetWithLootRiffle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
